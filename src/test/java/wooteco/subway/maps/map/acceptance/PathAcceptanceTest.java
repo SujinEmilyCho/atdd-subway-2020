@@ -6,6 +6,9 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import wooteco.security.core.TokenResponse;
 import wooteco.subway.common.acceptance.AcceptanceTest;
 import wooteco.subway.maps.line.acceptance.step.LineAcceptanceStep;
 import wooteco.subway.maps.line.dto.LineResponse;
@@ -14,6 +17,10 @@ import wooteco.subway.maps.station.dto.StationResponse;
 
 import static wooteco.subway.maps.line.acceptance.step.LineStationAcceptanceStep.지하철_노선에_지하철역_등록되어_있음;
 import static wooteco.subway.maps.map.acceptance.step.PathAcceptanceStep.*;
+import static wooteco.subway.members.member.acceptance.MemberAcceptanceTest.EMAIL;
+import static wooteco.subway.members.member.acceptance.MemberAcceptanceTest.PASSWORD;
+import static wooteco.subway.members.member.acceptance.step.MemberAcceptanceStep.로그인_되어_있음;
+import static wooteco.subway.members.member.acceptance.step.MemberAcceptanceStep.회원_등록되어_있음;
 
 @DisplayName("지하철 경로 조회")
 public class PathAcceptanceTest extends AcceptanceTest {
@@ -24,6 +31,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     private Long 이호선;
     private Long 신분당선;
     private Long 삼호선;
+    private TokenResponse loginResponse;
 
     /**
      * 교대역    --- *2호선* ---   강남역
@@ -77,6 +85,37 @@ public class PathAcceptanceTest extends AcceptanceTest {
         //then
         적절한_경로를_응답(response, Lists.newArrayList(교대역, 강남역, 양재역));
         총_거리와_소요_시간과_요금을_함께_응답함(response, 4, 3, 1250 + 900);
+    }
+
+
+    @DisplayName("어린이(6세 이상~ 13세 미만) 고객은 운임에서 350원을 공제한 금액의 50%할인을 받을 수 있다.")
+    @ParameterizedTest
+    @CsvSource(value = "6, 12")
+    void findPathByDistanceWithKidAccount(int age) {
+        회원_등록되어_있음(EMAIL, PASSWORD, age);
+        loginResponse = 로그인_되어_있음(EMAIL, PASSWORD);
+
+        //when
+        ExtractableResponse<Response> response = 거리_경로_조회_요청_with_로그인_멤버(loginResponse, "DISTANCE", 1L, 3L);
+
+        //then
+        적절한_경로를_응답(response, Lists.newArrayList(교대역, 남부터미널역, 양재역));
+        총_거리와_소요_시간과_요금을_함께_응답함(response, 3, 4, (1250 - 350) / 2);
+    }
+
+    @DisplayName("청소년(13세 이상~19세 미만) 고객은 운임에서 350원을 공제한 금액의 20%할인을 받을 수 있다.")
+    @ParameterizedTest
+    @CsvSource(value = "13, 18")
+    void findPathByDistanceWithYouthAccount() {
+        회원_등록되어_있음(EMAIL, PASSWORD, 18);
+        loginResponse = 로그인_되어_있음(EMAIL, PASSWORD);
+
+        //when
+        ExtractableResponse<Response> response = 거리_경로_조회_요청_with_로그인_멤버(loginResponse, "DISTANCE", 1L, 3L);
+
+        //then
+        적절한_경로를_응답(response, Lists.newArrayList(교대역, 남부터미널역, 양재역));
+        총_거리와_소요_시간과_요금을_함께_응답함(response, 3, 4, (1250 - 350) / 5 * 4);
     }
 
     private Long 지하철_노선_등록되어_있음(String name, String color) {

@@ -3,6 +3,7 @@ package wooteco.security.web;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import wooteco.security.core.Authentication;
@@ -21,6 +22,12 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String path = ((ServletWebRequest) webRequest).getRequest().getServletPath();
+        if (authentication == null && path.equals("/paths")) {
+            return null;
+        }
+
         if (authentication == null) {
             throw new AuthorizationException();
         }
