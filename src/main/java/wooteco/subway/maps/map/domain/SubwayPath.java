@@ -1,6 +1,7 @@
 package wooteco.subway.maps.map.domain;
 
 import com.google.common.collect.Lists;
+import wooteco.subway.maps.line.domain.Line;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,9 +16,11 @@ public class SubwayPath {
     public static final int EXTRA_FARE_RATE = 100;
 
     private List<LineStationEdge> lineStationEdges;
+    private List<Line> lines;
 
-    public SubwayPath(List<LineStationEdge> lineStationEdges) {
+    public SubwayPath(List<LineStationEdge> lineStationEdges, List<Line> lines) {
         this.lineStationEdges = lineStationEdges;
+        this.lines = lines;
     }
 
     public List<LineStationEdge> getLineStationEdges() {
@@ -55,6 +58,8 @@ public class SubwayPath {
             extraFare = calculateThirdZoneFare(totalDistance);
         }
 
+        extraFare += calculateLineFare();
+
         return extraFare;
     }
 
@@ -66,5 +71,13 @@ public class SubwayPath {
     private int calculateThirdZoneFare(int totalDistance) {
         double extraDistanceSection = Math.ceil((totalDistance - SECOND_ZONE_BOUNDARY) / THIRD_ZONE_ASSESSMENT_UNIT);
         return MAX_EXTRA_FARE_FROM_SECOND_ZONE + (int) (extraDistanceSection * EXTRA_FARE_RATE);
+    }
+
+    private int calculateLineFare() {
+        return lineStationEdges.stream()
+                .map(LineStationEdge::getLineId)
+                .flatMap(it -> lines.stream().filter(line -> line.getId().equals(it)))
+                .mapToInt(Line::getExtraFare)
+                .max().orElse(0);
     }
 }

@@ -7,6 +7,7 @@ import java.time.LocalTime;
 public class LineRequest {
     private String name;
     private String color;
+    private Integer extraFare;
     private LocalTime startTime;
     private LocalTime endTime;
     private Integer intervalTime;
@@ -14,9 +15,10 @@ public class LineRequest {
     public LineRequest() {
     }
 
-    public LineRequest(String name, String color, LocalTime startTime, LocalTime endTime, Integer intervalTime) {
+    public LineRequest(String name, String color, Integer extraFare, LocalTime startTime, LocalTime endTime, Integer intervalTime) {
         this.name = name;
         this.color = color;
+        this.extraFare = extraFare;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
@@ -28,6 +30,10 @@ public class LineRequest {
 
     public String getColor() {
         return color;
+    }
+
+    public Integer getExtraFare() {
+        return extraFare;
     }
 
     public LocalTime getStartTime() {
@@ -43,6 +49,6 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, color, startTime, endTime, intervalTime);
+        return new Line(name, color, extraFare, startTime, endTime, intervalTime);
     }
 }

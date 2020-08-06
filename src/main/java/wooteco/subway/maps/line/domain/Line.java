@@ -14,7 +14,7 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
-    private int extraFare;
+    private Integer extraFare;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
@@ -28,13 +28,18 @@ public class Line extends BaseEntity {
         this(name, color, 0, startTime, endTime, intervalTime);
     }
 
-    public Line(String name, String color, int extraFare, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(String name, String color, Integer extraFare, LocalTime startTime, LocalTime endTime, int intervalTime) {
         this.name = name;
         this.color = color;
         this.extraFare = extraFare;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.extraFare = this.extraFare == null ? 0 : this.extraFare;
     }
 
     public void update(Line line) {

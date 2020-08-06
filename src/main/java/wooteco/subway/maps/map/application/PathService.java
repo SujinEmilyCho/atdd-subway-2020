@@ -23,10 +23,10 @@ public class PathService {
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
         GraphPath<Long, LineStationEdge> path = dijkstraShortestPath.getPath(source, target);
 
-        return convertSubwayPath(path);
+        return convertSubwayPath(path, lines);
     }
 
-    private SubwayPath convertSubwayPath(GraphPath graphPath) {
-        return new SubwayPath((List<LineStationEdge>) graphPath.getEdgeList().stream().collect(Collectors.toList()));
+    private SubwayPath convertSubwayPath(GraphPath graphPath, List<Line> lines) {
+        return new SubwayPath((List<LineStationEdge>) graphPath.getEdgeList().stream().collect(Collectors.toList()), lines);
     }
 }

@@ -94,3 +94,4 @@ public class PathAcceptanceTest extends AcceptanceTest {
         return createdStationResponse1.as(StationResponse.class).getId();
     }
 }
+
