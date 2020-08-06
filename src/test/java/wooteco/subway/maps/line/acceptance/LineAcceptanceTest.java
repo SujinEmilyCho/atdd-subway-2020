@@ -2,9 +2,9 @@ package wooteco.subway.maps.line.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import wooteco.subway.common.acceptance.AcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.common.acceptance.AcceptanceTest;
 import wooteco.subway.maps.line.acceptance.step.LineAcceptanceStep;
 
 import java.util.Arrays;
@@ -15,10 +15,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = LineAcceptanceStep.지하철_노선_생성_요청("신분당선", "RED");
+        ExtractableResponse<Response> response = LineAcceptanceStep.지하철_노선_생성_요청("2호선", "GREEN");
+        ExtractableResponse<Response> response2 = LineAcceptanceStep.추가_요금이_있는_지하철_노선_생성_요청("신분당선", "RED", "900");
 
         // then
         LineAcceptanceStep.지하철_노선_생성됨(response);
+        LineAcceptanceStep.지하철_노선_생성됨(response2);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")

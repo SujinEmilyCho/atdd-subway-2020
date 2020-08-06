@@ -43,7 +43,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         남부터미널역 = 지하철역_등록되어_있음("남부터미널역");
 
         이호선 = 지하철_노선_등록되어_있음("2호선", "GREEN");
-        신분당선 = 지하철_노선_등록되어_있음("신분당선", "RED");
+        신분당선 = 추가_요금이_있는_지하철_노선_등록되어_있음("신분당선", "RED", 900);
         삼호선 = 지하철_노선_등록되어_있음("3호선", "ORANGE");
 
         지하철_노선에_지하철역_등록되어_있음(이호선, null, 교대역, 0, 0);
@@ -76,11 +76,16 @@ public class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 거리_경로_조회_요청("DURATION", 1L, 3L);
         //then
         적절한_경로를_응답(response, Lists.newArrayList(교대역, 강남역, 양재역));
-        총_거리와_소요_시간과_요금을_함께_응답함(response, 4, 3, 1250);
+        총_거리와_소요_시간과_요금을_함께_응답함(response, 4, 3, 1250 + 900);
     }
 
     private Long 지하철_노선_등록되어_있음(String name, String color) {
         ExtractableResponse<Response> createLineResponse1 = LineAcceptanceStep.지하철_노선_등록되어_있음(name, color);
+        return createLineResponse1.as(LineResponse.class).getId();
+    }
+
+    private Long 추가_요금이_있는_지하철_노선_등록되어_있음(String name, String color, int extraFare) {
+        ExtractableResponse<Response> createLineResponse1 = LineAcceptanceStep.추가_요금이_있는_지하철_노선_등록되어_있음(name, color, extraFare);
         return createLineResponse1.as(LineResponse.class).getId();
     }
 

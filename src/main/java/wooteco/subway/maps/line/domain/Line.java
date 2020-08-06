@@ -14,6 +14,7 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
+    private int extraFare;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
@@ -24,8 +25,13 @@ public class Line extends BaseEntity {
     }
 
     public Line(String name, String color, LocalTime startTime, LocalTime endTime, int intervalTime) {
+        this(name, color, 0, startTime, endTime, intervalTime);
+    }
+
+    public Line(String name, String color, int extraFare, LocalTime startTime, LocalTime endTime, int intervalTime) {
         this.name = name;
         this.color = color;
+        this.extraFare = extraFare;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
@@ -61,6 +67,10 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public int getExtraFare() {
+        return extraFare;
     }
 
     public LocalTime getStartTime() {
