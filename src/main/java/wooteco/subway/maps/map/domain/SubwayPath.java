@@ -6,6 +6,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SubwayPath {
+    public static final int FIRST_ZONE_FARE = 1250;
+    public static final int MAX_EXTRA_FARE_FROM_SECOND_ZONE = 800;
+    public static final int FIRST_ZONE_BOUNDARY = 10;
+    public static final int SECOND_ZONE_BOUNDARY = 50;
+    public static final double SECOND_ZONE_ASSESSMENT_UNIT = 5.0;
+    public static final double THIRD_ZONE_ASSESSMENT_UNIT = 8.0;
+    public static final int EXTRA_FARE_RATE = 100;
+
     private List<LineStationEdge> lineStationEdges;
 
     public SubwayPath(List<LineStationEdge> lineStationEdges) {
@@ -31,5 +39,32 @@ public class SubwayPath {
 
     public int calculateDistance() {
         return lineStationEdges.stream().mapToInt(it -> it.getLineStation().getDistance()).sum();
+    }
+
+    public int calculateFare() {
+        int totalDistance = calculateDistance();
+        return FIRST_ZONE_FARE + calculateExtraFare(totalDistance);
+    }
+
+    private int calculateExtraFare(int totalDistance) {
+        int extraFare = 0;
+
+        if (FIRST_ZONE_BOUNDARY < totalDistance && totalDistance <= SECOND_ZONE_BOUNDARY) {
+            extraFare = calculateSecondZoneFare(totalDistance);
+        } else if (SECOND_ZONE_BOUNDARY < totalDistance) {
+            extraFare = calculateThirdZoneFare(totalDistance);
+        }
+
+        return extraFare;
+    }
+
+    private int calculateSecondZoneFare(int totalDistance) {
+        double extraDistanceSection = Math.ceil((totalDistance - FIRST_ZONE_BOUNDARY) / SECOND_ZONE_ASSESSMENT_UNIT);
+        return (int) (extraDistanceSection * EXTRA_FARE_RATE);
+    }
+
+    private int calculateThirdZoneFare(int totalDistance) {
+        double extraDistanceSection = Math.ceil((totalDistance - SECOND_ZONE_BOUNDARY) / THIRD_ZONE_ASSESSMENT_UNIT);
+        return MAX_EXTRA_FARE_FROM_SECOND_ZONE + (int) (extraDistanceSection * EXTRA_FARE_RATE);
     }
 }
